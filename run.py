@@ -100,35 +100,37 @@ def calc(U):
         elif item.type == 'binary':
             x = Number(float(stack.pop().val))
             y = Number(float(stack.pop().val))
-            if class_name == 'pow':
-                stack.append(pow.calc(y, x))
-            elif class_name == 'mul':
-                stack.append(mul.calc(y, x))
-            elif class_name == 'div':
-                stack.append(div.calc(y, x))
-            elif class_name == 'add':
-                stack.append(add.calc(y, x))
-            else:
-                stack.append(sub.calc(y, x))
+            stack.append(item.calc(y,x))
+            # if class_name == 'pow':
+            #     stack.append(pow.calc(y, x))
+            # elif class_name == 'mul':
+            #     stack.append(mul.calc(y, x))
+            # elif class_name == 'div':
+            #     stack.append(div.calc(y, x))
+            # elif class_name == 'add':
+            #     stack.append(add.calc(y, x))
+            # else:
+            #     stack.append(sub.calc(y, x))
         else:
             x = Number(float(stack.pop().val))
-            if class_name == 'factorial':     
-                y = factorial.calc(x)
-                stack.append(y)
-            if class_name == 'cos':
-                stack.append(cos.calc(x))
-            elif class_name == 'sin':
-                stack.append(sin.calc(x))
-            elif class_name == 'tan':
-                stack.append(tan.calc(x))
-            elif class_name == 'cot':
-                stack.append(cot.calc(x))
+            stack.append(item.calc(x))
+            # if class_name == 'factorial':
+            #     y = factorial.calc(x)
+            #     stack.append(y)
+            # if class_name == 'cos':
+            #     stack.append(cos.calc(x))
+            # elif class_name == 'sin':
+            #     stack.append(sin.calc(x))
+            # elif class_name == 'tan':
+            #     stack.append(tan.calc(x))
+            # elif class_name == 'cot':
+            #     stack.append(cot.calc(x))
 #        for item in stack:
 #            print(item)  
         
     return stack.pop()
 if __name__ == "__main__":
-    s = '2^(--3) - -2*cos(1*2/3) + tan(sin(-2))'
+    s = '2^(--3) - -10*cos(0*20/3) + tan(sin(0))'
 #    s = '(4!/4)! + cos(tan(2--3*2-5))^2'
     new_s = to_binary_op(s)
     ob_list = preprocess(new_s)
