@@ -1,4 +1,4 @@
-import operator
+from op_class import *
 
 def is_operand(ch):
     return ch.isdigit()
@@ -35,7 +35,7 @@ def assign_class(item):
            '*': mul(),
            '/': div(),
            '^': pow(),
-           '!': fac(),
+           '!': factorial(),
            'sin': sin(),
            'cos': cos(),
            'tan': tan(),
@@ -101,30 +101,35 @@ def calc(U):
             x = Number(float(stack.pop().val))
             y = Number(float(stack.pop().val))
             if class_name == 'pow':
-                stack.append(x.pow(y))
+                stack.append(pow.calc(y, x))
             elif class_name == 'mul':
-                stack.append(x*y)
+                stack.append(mul.calc(y, x))
             elif class_name == 'div':
-                stack.append(y/x)
+                stack.append(div.calc(y, x))
             elif class_name == 'add':
-                stack.append(x+y)
+                stack.append(add.calc(y, x))
             else:
-                stack.append(y-x)
+                stack.append(sub.calc(y, x))
         else:
             x = Number(float(stack.pop().val))
-            if class_name == 'fac':
-                stack.append(x.fac())
-            elif class_name == 'cos':
-                stack.append(x.cos())
+            if class_name == 'factorial':     
+                y = factorial.calc(x)
+                stack.append(y)
+            if class_name == 'cos':
+                stack.append(cos.calc(x))
             elif class_name == 'sin':
-                stack.append(x.sin())
+                stack.append(sin.calc(x))
             elif class_name == 'tan':
-                stack.append(x.tan())
-            else:
-                stack.append(x.cot())
+                stack.append(tan.calc(x))
+            elif class_name == 'cot':
+                stack.append(cot.calc(x))
+#        for item in stack:
+#            print(item)  
+        
     return stack.pop()
 if __name__ == "__main__":
-    s = '(5!)/(3!) - -2*cos(1*2/3) + sin(2!)*tan(1/3!)'
+    s = '2^(--3) - -2*cos(1*2/3) + tan(sin(-2))'
+#    s = '(4!/4)! + cos(tan(2--3*2-5))^2'
     new_s = to_binary_op(s)
     ob_list = preprocess(new_s)
     u = to_postfix(ob_list)

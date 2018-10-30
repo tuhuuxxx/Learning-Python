@@ -2,26 +2,6 @@ import math
 class Number:
     def __init__(self, val=None):
         self.val = val
-    def __add__(self, other):
-        return add.calc(self, other)
-    def __sub__(self, other):
-        return sub.calc(self, other)
-    def __mul__(self, other):
-        return mul.calc(self, other)
-    def __truediv__(self, other):
-        return div.calc(self, other)
-    def pow(self, other):
-        return pow.calc(self, other)
-    def sin(self):
-        return sin.calc(self)
-    def cos(self):
-        return cos.calc(self)
-    def tan(self):
-        return tan.calc(self)
-    def cot(self):
-        return cot.calc(self)
-    def fac(self):
-        return fac.calc(self)
 class Base:
     def __init__(self, prior, type_op):
         self.prior = prior
@@ -63,7 +43,7 @@ class pow(Base):
         c = Number()
         c.val = a.val**b.val
         return c
-class fac(Base):
+class factorial(Base):
     def __init__(self):
         Base.__init__(self, 4, 'unary')   
     def calc(a):
