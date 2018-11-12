@@ -1,33 +1,10 @@
 from op_class import *
+import re
 
 def is_operand(ch):
     return ch.isdigit()
 def is_operator(ch):
     return ch in ['^', '*', '/', '+', '-']
-def check_sign(s):
-    "Handle --++1 case"
-    result = []
-    for i in range(len(s)):
-        if (i==0 and (s[i]=='+' or s[i]=='-')) or (is_operator(s[i-1]) and (s[i]=='+' or s[i]=='-')) or (s[i-1]=='(' and (s[i]=='+' or s[i]=='-')):
-            result.append('true')
-        else:
-            result.append('false')
-    return result
-
-def to_binary_op(s):
-    s = s.replace(' ', '')
-    result = check_sign(s)
-    new_str = ''
-    
-    for i in range(len(s)):
-        if result[i] == 'true':
-            if s[i] == '-':
-                new_str = new_str + '(0-1)*'
-            else:    # s[i] == '-'
-                pass
-        else:
-            new_str = new_str + s[i]
-    return new_str
 def assign_class(item):
    switcher = {
            '+': add(),
@@ -45,28 +22,41 @@ def assign_class(item):
            }
    return switcher.get(item, Number(item))
 def preprocess(s):
-    string = ''
-    l = []
-    i = 0
-    while s != '':
-        string = string + s[i]
-#        print(string)
-        if is_operand(string):
-            l.append(string)
-            i = 0
-            s = s.replace(string, '', 1)
-            string = ''
-        elif string not in ['^', '*', '/', '+', '-', '!', 'sin', 'cos', 'tan', 'cot', '(', ')']:
-            i = i + 1
+    s = s.replace(' ', '')
+    
+    flag = []
+    for i in range(len(s)):
+        if (i==0 and (s[i]=='+' or s[i]=='-')) or (is_operator(s[i-1]) and (s[i]=='+' or s[i]=='-')) or (s[i-1]=='(' and (s[i]=='+' or s[i]=='-')):
+            flag.append('true')
         else:
-            l.append(string)
-            i = 0
-            s = s.replace(string, '', 1)
-            string = ''
+            flag.append('false')
+    new_str = ''
+    for i in range(len(s)):
+        if flag[i] == 'true':
+            if s[i] == '-':
+                new_str = new_str + '(0-1)*'
+            else:    # s[i] == '-'
+                pass
+        else:
+            new_str = new_str + s[i]
+    new_str = new_str + ')'*(s.count('(') - s.count(')'))
+    l = re.findall(r'[0-9]+\.[0-9]+|[0-9]+|[\+\-*/^!()/]|sin|cos|tan|cot', new_str)
     object_list = []
     for item in l:
         object_list.append(assign_class(item))
-    return object_list
+    
+    u = [object_list[0]]
+    for i in range(1, len(object_list)):
+        if type(object_list[i]).__name__ == 'leftParenthese' and type(object_list[i-1]).__name__ in ['rightParenthese', 'Number', 'factorial']:
+            u.append(mul())
+            u.append(object_list[i])
+        elif type(object_list[i]).__name__ in ['sin', 'cos', 'tan', 'cot'] and type(object_list[i-1]).__name__ in ['Number', 'factorial']:
+            u.append(mul())
+            u.append(object_list[i])
+        else: 
+            u.append(object_list[i])
+    
+    return u
 
 def to_postfix(object_list):
     P = []
@@ -129,11 +119,27 @@ def calc(U):
 #            print(item)  
         
     return stack.pop()
+def standardize(s='1+(3(('):
+    s = s.replace(' ', '')
+    count1 = s.count('(')
+    count2 = s.count(')')
+    new_str = ''
+    for i in range(len(s)):
+        if s[i] == '(' and s[i-1] and (s[i-1].isdigit() or s[i-1] == '!'):
+            new_str = new_str + '*'  + s[i]
+        else:
+            new_str = new_str + s[i]
+    s = new_str   
+    s = s + ')'*(count1 - count2)
+    print(s)
+    ob_list = preprocess(s)
+    u = to_postfix(ob_list)
+    v = calc(u)
+    print(v.val)
 if __name__ == "__main__":
-    s = '2^(--3) - -10*cos(0*20/3) + tan(sin(0))'
-#    s = '(4!/4)! + cos(tan(2--3*2-5))^2'
-    new_s = to_binary_op(s)
-    ob_list = preprocess(new_s)
+#    s = '+2^(--3!) - -+2.25*cos(0*20/3) + tan(sin(0.0))'
+    s = '(2 + 3)(4 - 6.015)(cos(3!sin(20 -- 2/(3'
+    ob_list = preprocess(s)
     u = to_postfix(ob_list)
     v = calc(u)
     print(v.val)

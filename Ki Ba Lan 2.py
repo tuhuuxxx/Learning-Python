@@ -31,6 +31,7 @@ def check_incre_decre_op(s):
     return result       
 
 def convert_unary_to_binary_op(s):
+    s = s.replace(' ', '')
     result = check_incre_decre_op(s)
     new_str = ''
     
@@ -116,8 +117,11 @@ def calc(U):
                 stack.append(math.tan(x))
             else:
                 stack.append(1/math.tan(x))
+#    for item in stack:
+#        print(item)
     return stack.pop()
-s = 'sin(2+3*4) + 3*4/cos(2--3) + cot((+2---+4)*3^2)'
+#s = '2^(--3) - -10*cos(0*20/3) + tan(sin(0))'
+s = '10+1-3'
 s2 = convert_unary_to_binary_op(s)
 l = preprocess(s2)
 U = to_postfix(l)
