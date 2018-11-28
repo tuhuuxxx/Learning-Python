@@ -8,10 +8,9 @@ class TfidfVectorizer():
         self.min_df = min_df
         self.max_features = max_features
         self.vocab = None
-        self.corpus = []
+        self.idf_dict = {}
         
     def fit_transform(self, corpus):
-        self.corpus = corpus
         all_text_list = ' '.join(corpus).split()
         if self.max_features is None:
             self.vocab = list(set(all_text_list))
@@ -19,17 +18,18 @@ class TfidfVectorizer():
             # remain the top max_features ordered by term frequency across the corpus
             word_dict = Counter(all_text_list)
             self.vocab = [item[0] for item in word_dict.most_common(self.max_features)]
-            
+        
+        self.idf_dict = self.idf(corpus)
         X = []
         for doc in corpus:
-            X.append([self.tf_idf(word, doc) for word in self.vocab])
+            X.append([self.tf(word, doc)*self.idf_dict[word] for word in self.vocab])
         X = np.asarray(X)
         return X
             
     def transform(self, corpus):
         X = []
         for doc in corpus:
-            X.append([self.tf_idf(word, doc) for word in self.vocab])
+            X.append([self.tf(word, doc)*self.idf_dict[word] for word in self.vocab])
         X = np.asarray(X)
         return X
     
@@ -39,13 +39,15 @@ class TfidfVectorizer():
     def tf(self, word, doc):
         return doc.split().count(word)/len(doc.split())
     
-    def idf(self, word):
-        n_docs = sum([1 for doc in self.corpus if word in doc.split()])
-        return math.log10(len(self.corpus)/n_docs)
-    
-    def tf_idf(self, word, doc):
-        return self.tf(word, doc)*self.idf(word)
-'''
+    def idf(self, corpus):
+        idf_dict = {}
+        n_corpus = len(corpus)
+        corpus = [set(doc.split()) for doc in corpus]
+        for word in self.vocab:
+            n = sum([1 for doc in corpus if word in doc])
+            idf_dict.update({word: math.log10(n_corpus/n)})
+        return idf_dict
+
 if __name__ == "__main__":
     doc1 = 'this is a a sample'
     doc2 = 'this is another another example example example'
@@ -59,7 +61,9 @@ if __name__ == "__main__":
     X = tv.fit_transform(corpus)
     Y = tv.transform(corpus2)
     print(Y)
-'''
+    
+    
+        
 
     
     
