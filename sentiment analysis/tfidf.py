@@ -1,6 +1,7 @@
 from collections import Counter
 import math
 import numpy as np
+from scipy.sparse import csr_matrix
 
 class TfidfVectorizer():
     def __init__(self, max_df=1.0, min_df=1, max_features=None):
@@ -23,14 +24,14 @@ class TfidfVectorizer():
         X = []
         for doc in corpus:
             X.append([self.tf(word, doc)*self.idf_dict[word] for word in self.vocab])
-        X = np.asarray(X)
+        X = csr_matrix(X)
         return X
             
     def transform(self, corpus):
         X = []
         for doc in corpus:
             X.append([self.tf(word, doc)*self.idf_dict[word] for word in self.vocab])
-        X = np.asarray(X)
+        X = csr_matrix(X)
         return X
     
     def get_feature_names(self):
