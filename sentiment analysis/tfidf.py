@@ -19,6 +19,7 @@ class TfidfVectorizer():
             # remain the top max_features ordered by term frequency across the corpus
             word_dict = Counter(all_text_list)
             self.vocab = [item[0] for item in word_dict.most_common(self.max_features)]
+        self.vocab_size = len(self.vocab)
         
         self.idf_dict = self.idf(corpus)
         X = []
@@ -26,14 +27,26 @@ class TfidfVectorizer():
             X.append([self.tf(word, doc)*self.idf_dict[word] for word in self.vocab])
         X = csr_matrix(X)
         return X
-            
+    ''' 
     def transform(self, corpus):
         X = []
         for doc in corpus:
             X.append([self.tf(word, doc)*self.idf_dict[word] for word in self.vocab])
         X = csr_matrix(X)
         return X
-    
+    '''
+    def transform(self, corpus):
+        X = []
+        for doc in corpus:
+            words = set(doc.split())
+            temp = [0 for _ in range(self.vocab_size)]
+            for word in words:
+                if word in self.vocab:
+                    temp[self.vocab.index(word)] = self.tf(word, doc)*self.idf_dict[word]
+            X.append(temp)
+        X = csr_matrix(X)
+        return X
+      
     def get_feature_names(self):
         return self.vocab
     

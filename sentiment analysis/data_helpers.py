@@ -2,7 +2,7 @@ import glob
 import re
 
 def clean_doc(doc):
-    doc = re.sub(r'[.,?,:,\,/,\-,_,(,),+,;,|,!]', ' ', doc)
+    doc = re.sub(r'[.,?,:,\,=,^/,\-,(,),+,;,|,!,*]', ' ', doc)
     doc = re.sub(r"\d+.{0,1}\d+", " number ", doc)
     doc = re.sub(r"\d+", " number ", doc)
     doc = re.sub(' +',' ', doc)
